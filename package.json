@@ -7,7 +7,10 @@
 		"dev": "wrangler dev",
 		"start": "wrangler dev",
 		"cf-typegen": "wrangler types",
-		"test": "vitest run"
+		"test": "vitest run",
+		"lint": "oxlint src/",
+		"fmt": "oxfmt --write src/",
+		"fmt:check": "oxfmt --check src/"
 	},
 	"dependencies": {
 		"hono": "^4.6.20",
@@ -17,6 +20,9 @@
 		"@types/node": "^22.13.0",
 		"@types/pngjs": "^6.0.5",
 		"@types/service-worker-mock": "^2.0.4",
+		"oxfmt": "^0.41.0",
+		"oxlint": "^1.56.0",
+		"typescript": "^5.9.3",
 		"vitest": "^4.1.1",
 		"wrangler": "^4.76.0"
 	}

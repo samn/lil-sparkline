@@ -1,3 +1,7 @@
+# Pre-commit Checks
+
+IMPORTANT: You MUST run `prek run --all-files` before every commit and ensure all hooks pass. Never skip or bypass these checks. The hooks verify formatting (oxfmt), linting (oxlint), and type checking (tsc). If any check fails, fix the issue before committing.
+
 # Cloudflare Workers
 
 STOP. Your knowledge of Cloudflare Workers APIs and limits may be outdated. Always retrieve current documentation before any Workers, KV, R2, D1, Durable Objects, Queues, Vectorize, AI, or Agents SDK task.

@@ -113,9 +113,9 @@ describe("GET /", () => {
       const png = decodePng(await res.arrayBuffer());
       // Check a corner pixel — should be red with full alpha
       const cornerIdx = 0;
-      expect(png.data[cornerIdx]).toBe(255);     // R
-      expect(png.data[cornerIdx + 1]).toBe(0);   // G
-      expect(png.data[cornerIdx + 2]).toBe(0);   // B
+      expect(png.data[cornerIdx]).toBe(255); // R
+      expect(png.data[cornerIdx + 1]).toBe(0); // G
+      expect(png.data[cornerIdx + 2]).toBe(0); // B
       expect(png.data[cornerIdx + 3]).toBe(255); // A
     });
 

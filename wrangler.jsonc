@@ -10,6 +10,9 @@
 	"observability": {
 		"enabled": true
 	},
+  "routes": [
+    { "pattern": "sparklines.samn.biz", "custom_domain": true }
+  ],
 	"compatibility_flags": [
 		"nodejs_compat"
 	]

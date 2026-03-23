@@ -55,10 +55,7 @@ app.get("/", (c) => {
   );
 
   const fg = parseHex(url.searchParams.get("fg") ?? undefined, DEFAULT_FG)!;
-  const bg = parseHex(
-    url.searchParams.get("bg") ?? undefined,
-    "transparent",
-  );
+  const bg = parseHex(url.searchParams.get("bg") ?? undefined, "transparent");
 
   const png = renderSparkline({ data, width, height, fg, bg });
 

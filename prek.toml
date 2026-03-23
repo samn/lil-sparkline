@@ -1,0 +1,26 @@
+[[repos]]
+repo = "local"
+
+[[repos.hooks]]
+id = "oxfmt"
+name = "Format with oxfmt"
+language = "system"
+entry = "npx oxfmt --check src/"
+pass_filenames = false
+files = '\.(js|jsx|ts|tsx)$'
+
+[[repos.hooks]]
+id = "oxlint"
+name = "Lint with oxlint"
+language = "system"
+entry = "npx oxlint src/"
+pass_filenames = false
+files = '\.(js|jsx|ts|tsx)$'
+
+[[repos.hooks]]
+id = "tsc"
+name = "Type check with tsc"
+language = "system"
+entry = "npx tsc --noEmit"
+pass_filenames = false
+files = '\.(ts|tsx)$'
