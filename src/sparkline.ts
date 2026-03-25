@@ -6,48 +6,78 @@ export interface SparklineOptions {
   height: number;
   fg: [number, number, number];
   bg: [number, number, number] | null; // null = transparent
+  scale?: number; // supersampling factor (default 2)
 }
 
 export function renderSparkline(opts: SparklineOptions): Buffer {
   const { data, width, height, fg, bg } = opts;
-  const png = new PNG({ width, height });
+  const scale = opts.scale ?? 2;
+  const sw = width * scale;
+  const sh = height * scale;
+  const hires = new PNG({ width: sw, height: sh });
 
   // Fill background
-  for (let y = 0; y < height; y++) {
-    for (let x = 0; x < width; x++) {
-      const idx = (y * width + x) << 2;
+  for (let y = 0; y < sh; y++) {
+    for (let x = 0; x < sw; x++) {
+      const idx = (y * sw + x) << 2;
       if (bg) {
-        png.data[idx] = bg[0];
-        png.data[idx + 1] = bg[1];
-        png.data[idx + 2] = bg[2];
-        png.data[idx + 3] = 255;
+        hires.data[idx] = bg[0];
+        hires.data[idx + 1] = bg[1];
+        hires.data[idx + 2] = bg[2];
+        hires.data[idx + 3] = 255;
       } else {
-        png.data[idx] = 0;
-        png.data[idx + 1] = 0;
-        png.data[idx + 2] = 0;
-        png.data[idx + 3] = 0;
+        hires.data[idx] = 0;
+        hires.data[idx + 1] = 0;
+        hires.data[idx + 2] = 0;
+        hires.data[idx + 3] = 0;
       }
     }
   }
 
-  // Normalize data to pixel coordinates
-  const padding = 2;
+  // Normalize data to pixel coordinates (in hi-res space)
+  const padding = 2 * scale;
   const minVal = Math.min(...data);
   const maxVal = Math.max(...data);
   const range = maxVal - minVal || 1;
 
   const points: [number, number][] = data.map((v, i) => {
-    const x = padding + (i / (data.length - 1)) * (width - 2 * padding - 1);
-    const y = padding + (1 - (v - minVal) / range) * (height - 2 * padding - 1);
+    const x = padding + (i / (data.length - 1)) * (sw - 2 * padding - 1);
+    const y = padding + (1 - (v - minVal) / range) * (sh - 2 * padding - 1);
     return [x, y];
   });
 
-  // Draw anti-aliased line segments (Wu's algorithm)
+  // Draw anti-aliased line segments (Wu's algorithm) at hi-res
   for (let i = 0; i < points.length - 1; i++) {
-    drawLineWu(png, width, height, points[i], points[i + 1], fg);
+    drawLineWu(hires, sw, sh, points[i], points[i + 1], fg);
   }
 
-  return PNG.sync.write(png);
+  // Downsample hi-res to output size using area averaging
+  const out = new PNG({ width, height });
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      let r = 0,
+        g = 0,
+        b = 0,
+        a = 0;
+      for (let sy = 0; sy < scale; sy++) {
+        for (let sx = 0; sx < scale; sx++) {
+          const idx = ((y * scale + sy) * sw + (x * scale + sx)) << 2;
+          r += hires.data[idx];
+          g += hires.data[idx + 1];
+          b += hires.data[idx + 2];
+          a += hires.data[idx + 3];
+        }
+      }
+      const n = scale * scale;
+      const oidx = (y * width + x) << 2;
+      out.data[oidx] = Math.round(r / n);
+      out.data[oidx + 1] = Math.round(g / n);
+      out.data[oidx + 2] = Math.round(b / n);
+      out.data[oidx + 3] = Math.round(a / n);
+    }
+  }
+
+  return PNG.sync.write(out);
 }
 
 function plot(

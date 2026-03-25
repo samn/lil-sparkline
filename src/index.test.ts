@@ -140,7 +140,7 @@ describe("GET /", () => {
       // Scan for any green pixels (the line)
       let foundGreen = false;
       for (let i = 0; i < png.data.length; i += 4) {
-        if (png.data[i + 1]! > 200 && png.data[i]! < 50 && png.data[i + 2]! < 50) {
+        if (png.data[i + 1]! > 100 && png.data[i]! < 50 && png.data[i + 2]! < 50) {
           foundGreen = true;
           break;
         }
